@@ -1,13 +1,39 @@
 # tool: scribe-data
-# All Bengali (Q9610) verbs.
+# All Bengali (Q9610) verbs and their forms in Chalita Bhasha, Sadhu Bhasha, and Polite Bangla Form.
 # Enter this query at https://query.wikidata.org/.
 
-SELECT
+SELECT DISTINCT
   (REPLACE(STR(?lexeme), "http://www.wikidata.org/entity/", "") AS ?lexemeID)
-  ?verb
+  ?infinitive
+  ?chalitaBhasha
+  ?sadhuBhasha
+  ?politeForm
 
 WHERE {
-  ?lexeme dct:language wd:Q9610 ;
+    ?lexeme dct:language wd:Q9610 ;
     wikibase:lexicalCategory wd:Q24905 ;
-    wikibase:lemma ?verb .
+    wikibase:lemma ?infinitive .
+  
+  # MARK: Chalita Bhasha (Modern Colloquial Bengali)
+  OPTIONAL {
+    ?lexeme ontolex:lexicalForm ?chalitaForm .
+    ?chalitaForm ontolex:representation ?chalitaBhasha ;
+      wikibase:grammaticalFeature wd:Q75242466 .  # Chalita Bhasha
+  } .
+
+  # MARK: Sadhu Bhasha (Classical Literary Bengali)
+  OPTIONAL {
+    ?lexeme ontolex:lexicalForm ?sadhuForm .
+    ?sadhuForm ontolex:representation ?sadhuBhasha ;
+      wikibase:grammaticalFeature wd:Q20613396 .  # Sadhu Bhasha
+  } .
+
+  # MARK: Polite Form
+  OPTIONAL {
+    ?lexeme ontolex:lexicalForm ?politeVerbForm .
+    ?politeVerbForm ontolex:representation ?politeForm ;
+      wikibase:grammaticalFeature wd:Q56650512 .  # Polite form
+  } .
 }
+
+LIMIT 1000
