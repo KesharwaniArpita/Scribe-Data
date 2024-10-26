@@ -28,7 +28,7 @@ import re
 import sys
 from pathlib import Path
 
-from scribe_data.cli.cli_utils import (
+from scribe_data.utils import (
     LANGUAGE_DATA_EXTRACTION_DIR,
     data_type_metadata,
     language_metadata,
@@ -172,6 +172,9 @@ def check_query_identifiers() -> None:
     # Exit with an error code if any incorrect QIDs are found.
     if incorrect_languages or incorrect_data_types:
         sys.exit(1)
+
+    else:
+        print("All query language and data type QIDs are correct.")
 
 
 if __name__ == "__main__":
