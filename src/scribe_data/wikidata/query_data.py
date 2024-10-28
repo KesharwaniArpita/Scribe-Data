@@ -66,12 +66,18 @@ def execute_formatting_script(formatting_file_path, output_dir):
     env = os.environ.copy()
     env["PYTHONPATH"] = str(project_root)
 
-    # Use subprocess to run the formatting file.
-    subprocess.run(
-        [python_executable, str(formatting_file_path), "--file-path", output_dir],
-        env=env,
-        check=True,
-    )
+    try:
+        subprocess.run(
+            [python_executable, str(formatting_file_path), "--file-path", output_dir],
+            env=env,
+            check=True,
+        )
+    except FileNotFoundError:
+        print(
+            f"Error: The formatting script file '{formatting_file_path}' does not exist."
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Error: The formatting script failed with exit status {e.returncode}.")
 
 
 def query_data(
@@ -156,7 +162,7 @@ def query_data(
 
         if existing_files := list(export_dir.glob(f"{target_type}*.json")):
             if overwrite:
-                print("Overwrite is enabled. Removing existing files ...")
+                print("Overwrite is enabled. Removing existing files...")
                 for file in existing_files:
                     file.unlink()
 
@@ -177,17 +183,17 @@ def query_data(
                     )
 
                     if choice.lower() == "o":
-                        print("Removing existing files ...")
+                        print("Removing existing files...")
                         for file in existing_files:
                             file.unlink()
 
-                # elif choice in ["k", "K"]:
-                #     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-                #     file_name = f"{target_type}_{timestamp}.json"
+                    # elif choice in ["k", "K"]:
+                    #     timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+                    #     file_name = f"{target_type}_{timestamp}.json"
 
-                else:
-                    print(f"Skipping update for {lang} {target_type}.")
-                    continue
+                    else:
+                        print(f"Skipping update for {lang} {target_type}.")
+                        break
 
         print(f"Querying and formatting {lang} {target_type}")
 
